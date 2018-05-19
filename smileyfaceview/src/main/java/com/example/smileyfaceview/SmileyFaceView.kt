@@ -33,13 +33,13 @@ class SmileyFaceView (ctx : Context) : View(ctx) {
         fun update(stopcb : (Float) -> Unit) {
             scales[j] += dir * 0.1f
             if (Math.abs(scales[j] - prevScale) > 1) {
-                scales[j] = prevScale + dir.toInt()
+                scales[j] = prevScale + dir
                 j += dir.toInt()
                 if (j == scales.size || j == -1) {
                     j -= dir.toInt()
                     dir = 0f
                     prevScale = scales[j]
-                    stopcb()
+                    stopcb(prevScale)
                 }
             }
         }
@@ -78,7 +78,43 @@ class SmileyFaceView (ctx : Context) : View(ctx) {
                 animated = false
             }
         }
-
     }
 
+    data class SmileyFace (var i : Int, val state : State = State()) {
+
+        fun update(stopcb : (Float) -> Unit) {
+            state.update(stopcb)
+        }
+
+        fun startUpdating(startcb : () -> Unit) {
+            state.startUpdating(startcb)
+        }
+
+        fun draw(canvas : Canvas, paint : Paint) {
+            val w : Float = canvas.width.toFloat()
+            val h : Float = canvas.height.toFloat()
+            val r : Float = Math.min(w, h) / 15
+            canvas.save()
+            canvas.translate(w/2 , h/2 + (h/2 + r) * (1 - state.scales[0]))
+            paint.style = Paint.Style.FILL
+            paint.color = Color.parseColor("#f1c40f")
+            canvas.drawCircle(0f, 0f, r, paint)
+            paint.color = Color.BLACK
+            for (i in 0..1) {
+                canvas.drawCircle((r/4) * (2 * i - 1), -r/2, r/10, paint)
+            }
+            paint.style = Paint.Style.STROKE
+            val path : Path = Path()
+            var x : Float = (r/2) * Math.sin(Math.PI/4).toFloat()
+            var y : Float = (r/2) * state.scales[1] + (r/2) * Math.cos(Math.PI/4).toFloat()
+            path.moveTo(x, y)
+            for (i in 45..135) {
+                x  = (r/2  * Math.sin(Math.PI/4).toFloat())
+                y  = (r/2) * state.scales[1] + (r/2 * state.scales[1]) * Math.cos(Math.PI/4).toFloat()
+                path.lineTo(x, y)
+            }
+            canvas.drawPath(path, paint)
+            canvas.restore()
+        }
+    }
 }
