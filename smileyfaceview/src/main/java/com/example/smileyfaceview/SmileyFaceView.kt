@@ -61,7 +61,7 @@ class SmileyFaceView (ctx : Context) : View(ctx) {
             if (animated) {
                 updatecb()
                 try {
-                    Thread.sleep(50)
+                    Thread.sleep(75)
                     view.invalidate()
                 } catch(ex : Exception) {
 
@@ -96,24 +96,26 @@ class SmileyFaceView (ctx : Context) : View(ctx) {
         fun draw(canvas : Canvas, paint : Paint) {
             val w : Float = canvas.width.toFloat()
             val h : Float = canvas.height.toFloat()
-            val r : Float = Math.min(w, h) / 15
+            val r : Float = Math.min(w, h) / 6
+            paint.strokeCap = Paint.Cap.ROUND
+            paint.strokeWidth = r / 5
             canvas.save()
-            canvas.translate(w/2 , h/2 + (h/2 + r) * (1 - state.scales[0]))
+            canvas.translate(w/2 , 2 * h / 3 + (h/3 + r) * (1 - state.scales[0]))
             paint.style = Paint.Style.FILL
             paint.color = Color.parseColor("#f1c40f")
             canvas.drawCircle(0f, 0f, r, paint)
             paint.color = Color.BLACK
             for (i in 0..1) {
-                canvas.drawCircle((r/4) * (2 * i - 1), -r/2, r/10, paint)
+                canvas.drawCircle((r/3) * (2 * i - 1), -r/3, r/10, paint)
             }
             paint.style = Paint.Style.STROKE
             val path : Path = Path()
-            var x : Float = (r/2) * Math.sin(Math.PI/4).toFloat()
-            var y : Float = (r/2) * state.scales[1] + (r/2) * Math.cos(Math.PI/4).toFloat()
+            var x : Float = (r/2) * Math.cos(Math.PI/6).toFloat()
+            var y : Float = (r/3) * (1 - state.scales[1]) + (r/2 * state.scales[1]) * Math.sin(Math.PI/6).toFloat()
             path.moveTo(x, y)
-            for (i in 45..135) {
-                x  = (r/2  * Math.sin(Math.PI/4).toFloat())
-                y  = (r/2) * state.scales[1] + (r/2 * state.scales[1]) * Math.cos(Math.PI/4).toFloat()
+            for (i in 30..150) {
+                x  = (r/2  * Math.cos(i * Math.PI/180).toFloat())
+                y  = (r/3) * (1 - state.scales[1]) + (r/2 * state.scales[1]) * Math.sin(i * Math.PI/180).toFloat()
                 path.lineTo(x, y)
             }
             canvas.drawPath(path, paint)
@@ -139,7 +141,7 @@ class SmileyFaceView (ctx : Context) : View(ctx) {
 
         fun handleTap() {
             smileyFace.startUpdating {
-                animator.stop()
+                animator.start()
             }
         }
     }
