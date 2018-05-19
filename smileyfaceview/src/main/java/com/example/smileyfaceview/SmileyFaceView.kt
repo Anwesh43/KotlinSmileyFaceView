@@ -72,7 +72,7 @@ class SmileyFaceView (ctx : Context) : View(ctx) {
             if (animated) {
                 updatecb()
                 try {
-                    Thread.sleep(75)
+                    Thread.sleep(50)
                     view.invalidate()
                 } catch(ex : Exception) {
 
