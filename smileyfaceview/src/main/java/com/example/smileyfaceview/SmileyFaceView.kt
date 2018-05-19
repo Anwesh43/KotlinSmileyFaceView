@@ -4,6 +4,7 @@ package com.example.smileyfaceview
  * Created by anweshmishra on 20/05/18.
  */
 
+import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.view.MotionEvent
@@ -140,6 +141,15 @@ class SmileyFaceView (ctx : Context) : View(ctx) {
             smileyFace.startUpdating {
                 animator.stop()
             }
+        }
+    }
+
+    companion object {
+
+        fun create(activity : Activity) : SmileyFaceView{
+            val view : SmileyFaceView = SmileyFaceView(activity)
+            activity.setContentView(view)
+            return view
         }
     }
 }
