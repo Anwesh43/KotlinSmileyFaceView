@@ -117,4 +117,27 @@ class SmileyFaceView (ctx : Context) : View(ctx) {
             canvas.restore()
         }
     }
+
+    data class Renderer(var view : SmileyFaceView) {
+
+        private val animator : Animator = Animator(view)
+
+        private val smileyFace : SmileyFace = SmileyFace(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(Color.parseColor("#212121"))
+            smileyFace.draw(canvas, paint)
+            animator.animate {
+                smileyFace.update {
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            smileyFace.startUpdating {
+                animator.stop()
+            }
+        }
+    }
 }
