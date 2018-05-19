@@ -29,20 +29,31 @@ class SmileyFaceView (ctx : Context) : View(ctx) {
         return true
     }
 
-    data class State (var prevScale : Float = 0f, var dir : Float = 0f, var j : Int = 0) {
+    data class State (var prevScale : Float = 0f, var dir : Float = 0f, var j : Int = 0, var delay : Int = 0) {
 
         val scales : Array<Float> = arrayOf(0f, 0f)
 
+        val limit : Int = 12
+
         fun update(stopcb : (Float) -> Unit) {
-            scales[j] += dir * 0.1f
-            if (Math.abs(scales[j] - prevScale) > 1) {
-                scales[j] = prevScale + dir
-                j += dir.toInt()
-                if (j == scales.size || j == -1) {
-                    j -= dir.toInt()
-                    dir = 0f
-                    prevScale = scales[j]
-                    stopcb(prevScale)
+            if (delay == 0) {
+                scales[j] += dir * 0.1f
+                if (Math.abs(scales[j] - prevScale) > 1) {
+                    scales[j] = prevScale + dir
+                    delay++
+                }
+            }
+            else {
+                delay++
+                if (delay == limit) {
+                    j += dir.toInt()
+                    delay = 0
+                    if (j == scales.size || j == -1) {
+                        j -= dir.toInt()
+                        dir = 0f
+                        prevScale = scales[j]
+                        stopcb(prevScale)
+                    }
                 }
             }
         }
@@ -100,7 +111,7 @@ class SmileyFaceView (ctx : Context) : View(ctx) {
             paint.strokeCap = Paint.Cap.ROUND
             paint.strokeWidth = r / 5
             canvas.save()
-            canvas.translate(w/2 , 2 * h / 3 + (h/3 + r) * (1 - state.scales[0]))
+            canvas.translate(w/2 , h/2 + (h/2 + r) * (1 - state.scales[0]))
             paint.style = Paint.Style.FILL
             paint.color = Color.parseColor("#f1c40f")
             canvas.drawCircle(0f, 0f, r, paint)
