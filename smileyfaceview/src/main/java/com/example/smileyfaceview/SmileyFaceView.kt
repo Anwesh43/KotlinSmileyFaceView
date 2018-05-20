@@ -16,8 +16,14 @@ class SmileyFaceView (ctx : Context) : View(ctx) {
 
     private val renderer : Renderer = Renderer(this)
 
+    var onSmileyFaceListener : OnSmileyFaceListener ?= null
+
     override fun onDraw(canvas : Canvas) {
         renderer.render(canvas, paint)
+    }
+
+    fun addOnSmileyFaceListener(onShowListener: () -> Unit, onHideListener : () -> Unit) {
+        onSmileyFaceListener = OnSmileyFaceListener(onShowListener, onHideListener)
     }
 
     override fun onTouchEvent(event : MotionEvent) : Boolean {
@@ -145,6 +151,10 @@ class SmileyFaceView (ctx : Context) : View(ctx) {
             smileyFace.draw(canvas, paint)
             animator.animate {
                 smileyFace.update {
+                    when(it) {
+                        0f -> view.onSmileyFaceListener?.onHideListener?.invoke()
+                        1f -> view.onSmileyFaceListener?.onShowListener?.invoke()
+                    }
                     animator.stop()
                 }
             }
@@ -165,4 +175,7 @@ class SmileyFaceView (ctx : Context) : View(ctx) {
             return view
         }
     }
+
+    data class OnSmileyFaceListener(var onShowListener : () -> Unit, var onHideListener : () -> Unit)
+
 }
